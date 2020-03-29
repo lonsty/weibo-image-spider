@@ -48,14 +48,12 @@ def retry(exceptions, tries=3, delay=1, backoff=2, logger=None):
                 except exceptions as e:
                     if logger:
                         logger.warning('{}, Retrying in {} seconds...'.format(e, mdelay))
-                    else:
-                        print(e)
                     time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
             return f(*args, **kwargs)
 
-        return f_retry  # true decorator
+        return f_retry
 
     return deco_retry
 
@@ -91,9 +89,15 @@ def save_records(c):
     filename = os.path.join(c.saved_dir, c.status.start_time.strftime('%Y-%m-%d_%H-%M-%S') + '.json')
     with open(filename, 'w') as f:
         f.write(json.dumps({
-            'username': c.user.name,
+            'nickname': c.user.name,
             'uid': c.user.uid,
             'datetime': c.status.start_time_repr,
-            'succeed': c.status.succeed,
-            'failed': c.status.failed
+            'succeed': {
+                'count': len(c.status.succeed),
+                'urls': c.status.succeed
+            },
+            'failed': {
+                'count': len(c.status.failed),
+                'urls': c.status.failed
+            }
         }, ensure_ascii=False, indent=4))
