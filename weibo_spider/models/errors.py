@@ -3,9 +3,13 @@
 # @DATE : 2020/3/28 18:01
 
 
-class TokenUnavailable(Exception):
+class CookiesExpiredException(Exception):
     pass
 
 
-class NoMoreImages(Exception):
+class NoImagesException(Exception):
+    pass
+
+
+class ContentParserError(Exception):
     pass

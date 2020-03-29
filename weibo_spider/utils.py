@@ -1,8 +1,10 @@
 # @FILENAME : utils
 # @AUTHOR : lonsty
 # @DATE : 2020/3/28 14:23
+import json
 import os
 import random
+import sys
 import threading
 import time
 from functools import wraps
@@ -78,3 +80,20 @@ def read_cookie():
 def save_cookie(cookie):
     with open('cookie', 'w') as f:
         f.write(cookie)
+
+
+def quit(msg, code=0):
+    print(msg)
+    sys.exit(code)
+
+
+def save_records(c):
+    filename = os.path.join(c.saved_dir, c.status.start_time.strftime('%Y-%m-%d_%H-%M-%S') + '.json')
+    with open(filename, 'w') as f:
+        f.write(json.dumps({
+            'username': c.user.name,
+            'uid': c.user.uid,
+            'datetime': c.status.start_time_repr,
+            'succeed': c.status.succeed,
+            'failed': c.status.failed
+        }, ensure_ascii=False, indent=4))

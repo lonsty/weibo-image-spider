@@ -1,81 +1,100 @@
 # @FILENAME : img_spider
 # @AUTHOR : lonsty
 # @DATE : 2020/3/28 14:24
-from os.path import join as pjoin
+import os
+from queue import Empty
 from traceback import format_exc
 
 from bs4 import BeautifulSoup
+from requests.exceptions import RequestException
+from termcolor import colored
 
+from weibo_spider.config import Config
 from weibo_spider.models.dto import task_queue
-from weibo_spider.models.errors import NoMoreImages, TokenUnavailable
+from weibo_spider.models.errors import NoImagesException, CookiesExpiredException
 from weibo_spider.utils import get_session, retry, save_cookie
 
 
-@retry(Exception, tries=1)
-def crawl_image(cfg, page_url, session):
+@retry(RequestException)
+def crawl_image(cfg: Config, page_url, session):
     try:
-        resp = session.get(page_url, cookies=cfg.COOKIES, proxies=cfg.PROXIES, timeout=cfg.TIMEOUT)
+        resp = session.get(page_url, cookies=cfg.cookies, proxies=cfg.proxies, timeout=cfg.timeout)
     except Exception as err:
-        print(format_exc())
-        raise
+        raise RequestException(err)
 
     try:
         soup = BeautifulSoup(resp.json().get('data'), 'html.parser')
         for a in soup.find_all('a', class_='ph_ar_box'):
-            img = cfg.PATTERN.search(a.find('img').get('src')).group(0)
+            img = cfg.rex_pattern.search(a.find('img').get('src')).group(0)
             task_queue.put(img)
     except Exception as err:
-        raise TokenUnavailable('Token has expired, please input a new cookie:\n')
+        raise CookiesExpiredException('Cookie has expired, please copy and paste a new one:\n')
 
     try:
-        action_data = soup.find('div', class_='WB_cardwrap').get('action-data')
-        cfg.PHOTO_API.action_data = action_data
+        cfg.photo_api.action_data = soup.find('div', class_='WB_cardwrap').get('action-data')
     except Exception as err:
-        raise NoMoreImages('No more images to crawl')
+        raise NoImagesException('No more images to crawl')
 
 
-def crawl_worker(cfg):
+def crawl_worker(cfg: Config):
+    index = 1
     session = get_session()
-    for page in range(1, cfg.MAX_PAGES + 1):
-        cfg.PHOTO_API.page = page
+
+    while index <= cfg.max_pages:
+        cfg.photo_api.page = index
         try:
-            crawl_image(cfg, cfg.USER_PHOTO_API, session)
-        except TokenUnavailable as err:
-            cfg.COOKIES_RAW = input(str(err))
-            save_cookie(cfg.COOKIES_RAW)
-            crawl_image(cfg, cfg.USER_PHOTO_API, session)
-        except NoMoreImages as err:
-            print(format_exc())
+            crawl_image(cfg, cfg.user_photo_api, session)
+        except CookiesExpiredException as err:
+            cfg.cookies_raw = input(str(err))
+            save_cookie(cfg.cookies_raw)
+            continue
+        except (NoImagesException, Exception) as err:
+            # print(format_exc())
             break
-        except Exception:
-            cfg.END_CRAWLER = True
-    cfg.END_CRAWLER = True
+        index += 1
+    cfg.end_crawler = True
 
 
-@retry(Exception, tries=1)
-def download_image(cfg, img, session):
-    url = cfg.IMG_HOST + img
-    print(url)
+@retry(RequestException)
+def download_image(cfg: Config, img, session):
+    url = cfg.img_url_prefix + img
+    filename = os.path.join(cfg.saved_dir, img)
+
+    if (not cfg.overwrite) and os.path.isfile(filename):
+        return url
+
     try:
-        with session.get(url, cookies=cfg.COOKIES, proxies=cfg.PROXIES, timeout=cfg.TIMEOUT) as resp:
-            if resp.status_code != 200:
-                raise Exception(f'Response status code: {resp.status_code}')
+        resp = session.get(url, cookies=cfg.cookies, proxies=cfg.proxies, timeout=cfg.timeout)
+        if resp.status_code != 200:
+            raise Exception(f'Response status code: {resp.status_code}')
     except Exception as err:
-        print(format_exc())
-        raise
-
-    with open(pjoin(cfg.SAVED_DIR, img), 'wb') as f:
+        raise RequestException(err)
+    with open(filename, 'wb') as f:
         f.write(resp.content)
-        print(pjoin(cfg.SAVED_DIR, img))
+    return url
 
 
-def download_worker(cfg):
+def download_worker(cfg: Config):
     session = get_session()
-    while 1:
+    count = 0
+
+    while count <= cfg.max_num:
         try:
             img = task_queue.get(timeout=1)
-        except Exception as err:
-            if cfg.END_CRAWLER:
-                return
+            result = download_image(cfg, img, session)
+        except Empty:
+            if cfg.cancel or cfg.end_crawler:
+                break
+        except Exception as e:
+            print(format_exc())
+            result = cfg.img_url_prefix + img
+            cfg.status.failed.append(result)
+            print(
+                f'{colored("[x]", "red", attrs=["reverse"])} {colored(result, attrs=["underline"])}\t{cfg.status.fmt_status}',
+                end='\r', flush=True)
         else:
-            download_image(cfg, img, session)
+            cfg.status.succeed.append(result)
+            print(
+                f'{colored("[√]", "green", attrs=["reverse"])} {colored(result, attrs=["underline"])}\t{cfg.status.fmt_status}',
+                end='\r', flush=True)
+        count += 1

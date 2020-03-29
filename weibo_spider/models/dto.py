@@ -2,9 +2,11 @@
 # @AUTHOR : lonsty
 # @DATE : 2020/3/28 15:30
 import time
+from datetime import datetime
 from queue import Queue
 
 from pydantic import BaseModel
+from termcolor import colored
 
 task_queue = Queue()
 
@@ -23,16 +25,17 @@ class PhotoAPI(BaseModel):
     action_data: str = ''
     page_id: int = 0
     page: int = 1
-    api_pattern = 'https://weibo.com/p/aj/album/loading?ajwvr=6{action_data}&page_id={page_id}&page={page}&ajax_call=1&__rnd={rnd}'
 
-    @property
-    def action_data_fix(self):
-        return '&' + self.action_data
+    # api_pattern = 'https://weibo.com/p/aj/album/loading?ajwvr=6{action_data}&page_id={page_id}&page={page}&ajax_call=1&__rnd={rnd}'
+    #
+    # @property
+    # def action_data_fix(self):
+    #     return '&' + self.action_data
 
     @property
     def api(self):
-        return self.api_pattern.format(action_data=self.action_data_fix, page_id=self.page_id, page=self.page,
-                                       rnd=self.rnd)
+        return f'https://weibo.com/p/aj/album/loading?ajwvr=6&{self.action_data}' \
+               f'&page_id={self.page_id}&page={self.page}&ajax_call=1&__rnd={self.rnd}'
 
     @property
     def rnd(self):
@@ -40,10 +43,33 @@ class PhotoAPI(BaseModel):
 
 
 class Parameters(BaseModel):
-    USERNAME = ''
-    DESTINATION = ''
-    OVERRIDE: bool
-    THUMBNAIL: bool
-    MAX_NUM: int
-    MAX_PAGES: int
-    MAX_WORKERS: int
+    nickname = ''
+    uid: int = None
+    destination: str
+    overwrite: bool
+    thumbnail: bool
+    max_num: int
+    max_pages: int
+    max_workers: int
+
+
+class Status(BaseModel):
+    succeed = []
+    failed = []
+    start_time = datetime.now()
+
+    @property
+    def total(self):
+        return len(self.succeed) + len(self.failed)
+
+    @property
+    def start_time_repr(self):
+        return self.start_time.ctime()
+
+    @property
+    def time_used(self):
+        return str(datetime.now() - self.start_time)[:-7]
+
+    @property
+    def fmt_status(self):
+        return f'[Succeed: {colored(str(len(self.succeed)), "green")} | Failed: {colored(str(len(self.failed)), "red")}]'
