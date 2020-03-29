@@ -25,7 +25,7 @@ class Constant(BaseModel):
     thumbnail: bool = False
     max_images: int = 2000
     max_workers: int = 15
-    proxies_raw: str = ''
+    proxies_raw: str = None
     timeout = (5, 5)
     cancel: bool = False
     end_crawler = False

@@ -38,17 +38,17 @@ $ python3 main.py -u <nickname> -d <dest>
 
 运行截图
 
-![screenshot_01.png](screenshots/03.png)
+![screenshot_1.png](docs/screenshot_1.png)
 
 爬取结果
 
-![screenshot_02.png](screenshots/02.png)
+![screenshot_2.png](docs/screenshot_2.png)
 
 # 使用帮助
 
 ### 常用命令
 
-1. 部分图片**下载失败**或有**更新**，再执行相同的命令，对失败或新增的图片进行下载
+- 部分图片**下载失败**或有**更新**，再执行相同的命令，对失败或新增的图片进行下载
 
 ```sh
 $ python3 main.py -u <nickname> -d <dest>
@@ -74,9 +74,6 @@ Options:
 
   -n, --max-images INTEGER   Maximum number of images to download  [default:
                              2000]
-
-  -p, --max-pages INTEGER    Maximum number of pages to download  [default:
-                             20]
 
   -w, --max-workers INTEGER  Maximum thread workers  [default: 15]
   -P, --proxies TEXT         Use proxies to access websites. Example:
