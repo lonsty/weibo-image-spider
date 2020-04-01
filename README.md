@@ -33,7 +33,7 @@ $ pip3 install -r requirements.txt
 **注意**：
 
 *因网页版微博限制，使用爬虫请求其 API 时，需要 cookie 认证，[如何获取 cookie](docs/get_cookie.md)？
-一个 cookie 有效期一天（第二天零点失效），所以最好不要跨天爬取。*
+且 cookie 有效期为一天（第二天零点失效），所以最好不要跨天爬取。*
 
 下载用户昵称为 `nickname` 的最新 2000（默认） 张图片到路径 `dest` 下：
 
