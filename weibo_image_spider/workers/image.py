@@ -10,15 +10,16 @@ from termcolor import colored
 
 from weibo_image_spider.constant import Constant
 from weibo_image_spider.models.dto import appointment_jobs, downloading_jobs
-from weibo_image_spider.models.exceptions import NoImagesException, CookiesExpiredException
+from weibo_image_spider.models.exceptions import (CookiesExpiredException,
+                                                  NoImagesException)
 from weibo_image_spider.utils import get_session, retry, save_cookie
 
 
 @retry(RequestException)
 def crawl_image(const: Constant, url, session):
     try:
-        resp = session.get(url, cookies=const.cookies, proxies=const.proxies, stream=True,
-                           timeout=const.timeout)
+        resp = session.get(url, cookies=const.cookies, proxies=const.proxies,
+                           stream=True, timeout=const.timeout)
     except Exception as err:
         raise RequestException(err)
 
@@ -28,7 +29,7 @@ def crawl_image(const: Constant, url, session):
             img = const.rex_pattern.search(a.find('img').get('src')).group(0)
             downloading_jobs.put(img)
     except Exception as err:
-        raise CookiesExpiredException('Cookie has expired, please copy and paste a new one:\n')
+        raise CookiesExpiredException('Cookie has expired, please get a new one and paste to here:\n')
 
     try:
         const.photo_api.action_data = soup.find('div', class_='WB_cardwrap').get('action-data')
@@ -63,14 +64,14 @@ def download_image(const: Constant, img, session):
         return url
 
     try:
-        resp = session.get(url, cookies=const.cookies, proxies=const.proxies, stream=True,
-                           timeout=const.timeout)
+        resp = session.get(url, cookies=const.cookies, proxies=const.proxies,
+                           stream=True, timeout=const.timeout)
         if resp.status_code != 200:
             raise Exception(f'Response status code: {resp.status_code}')
     except Exception as err:
         raise RequestException(err)
     with open(filename, 'wb') as f:
-        for chunk in resp.iter_content(chunk_size=512):
+        for chunk in resp.iter_content(chunk_size=8192):
             if chunk:
                 f.write(chunk)
     return url

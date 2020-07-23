@@ -6,13 +6,14 @@ from concurrent.futures import ThreadPoolExecutor, wait
 
 import click
 from pydantic import ValidationError
-from requests.exceptions import RequestException, ConnectionError
+from requests.exceptions import ConnectionError, RequestException
 from termcolor import colored
 
 from weibo_image_spider.constant import Constant
 from weibo_image_spider.models.dto import Parameters, PhotoAPI
 from weibo_image_spider.utils import mkdirs_if_not_exist, quit, save_records
-from weibo_image_spider.workers import query_user_by_name, crawl_worker, download_worker
+from weibo_image_spider.workers import (crawl_worker, download_worker,
+                                        query_user_by_name)
 
 
 @click.command(help='A Weibo image spider, visit https://github.com/lonsty/weibo-image-spider.')

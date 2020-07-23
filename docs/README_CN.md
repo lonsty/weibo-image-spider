@@ -7,7 +7,7 @@
 - [x] 极速下载：多线程异步下载，可以根据需要设置线程数
 - [x] 异常重试：只要重试次数足够多，就没有下载不下来的图片 \(^o^)/！
 - [x] 增量下载：用户有新的上传，再跑一遍程序就行了 O(∩_∩)O 嗯！
-- [x] 高清原图：默认下载高清原图，可以使用参数`--thumbnail`下载缩略图（宽最大690px）
+- [x] 高清原图：默认下载高清原图，可以使用参数 `--thumbnail` 下载缩略图（宽最大 690px）
 
 ### 环境：
 
@@ -25,39 +25,44 @@ $ git clone https://github.com/lonsty/weibo-image-spider.git
 
 ```sh
 $ cd weibo-image-spider
-$ pip3 install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 ## 3. 快速使用
 
-下载用户昵称为 `nickname` 的最新 2000（默认） 张图片到路径 `dest` 下：
+**注意**：
+
+*因网页版微博限制，使用爬虫请求其 API 时，需要 cookie 认证，关于 [如何获取 cookie](get_cookie.md)？
+且 cookie 有效期为一天（第二天零点失效），所以最好不要跨天爬取。*
+
+下载用户昵称为 `nickname` 的最新 2000（可使用 `-n` 修改） 张图片到路径 `dest` 下：
 
 ```sh
-$ python3 main.py -u <nickname> -d <dest>
+$ python main.py -u <nickname> -d <dest>
 ```
 
 运行截图
 
-![screenshot_01.png](screenshots/03.png)
+![screenshot_1.png](docs/screenshot_1.png)
 
 爬取结果
 
-![screenshot_02.png](screenshots/02.png)
+![screenshot_2.png](docs/screenshot_2.png)
 
 # 使用帮助
 
 ### 常用命令
 
-1. 部分图片**下载失败**或有**更新**，再执行相同的命令，对失败或新增的图片进行下载
+- 部分图片 **下载失败** 或 **微博有更新**，再执行相同的命令，对失败或新增的图片进行下载
 
 ```sh
-$ python3 main.py -u <nickname> -d <dest>
+$ python main.py -u <nickname> -d <dest>
 ```
 
 ### 查看所有命令
 
 ```
-$ python3 main.py --help
+$ python main.py --help
 
 Usage: main.py [OPTIONS]
 
@@ -75,9 +80,6 @@ Options:
   -n, --max-images INTEGER   Maximum number of images to download  [default:
                              2000]
 
-  -p, --max-pages INTEGER    Maximum number of pages to download  [default:
-                             20]
-
   -w, --max-workers INTEGER  Maximum thread workers  [default: 15]
   -P, --proxies TEXT         Use proxies to access websites. Example:
                              '{"http": "user:passwd@www.example.com:port",
@@ -93,9 +95,9 @@ Options:
     主要功能：
     
     - 极速下载：多线程异步下载，可以根据需要设置线程数
-    - 异常重试：只要重试次数足够多，就没有下载不下来的图片 \(^o^)/
-    - 增量下载：设计师/用户有新的上传，再跑一遍程序就行了 O(∩_∩)O 嗯！
-    - 支持代理：可以配置使用代理
+    - 异常重试：只要重试次数足够多，就没有下载不下来的图片 \(^o^)/！
+    - 增量下载：用户有新的上传，再跑一遍程序就行了 O(∩_∩)O 嗯！
+    - 高清原图：默认下载高清原图，可以使用参数 `--thumbnail` 下载缩略图（宽最大 690px）
 
 # LICENSE
 

@@ -100,4 +100,4 @@ def save_records(c):
                 'count': len(c.status.failed),
                 'urls': c.status.failed
             }
-        }, ensure_ascii=False, indent=4))
+        }, ensure_ascii=False, indent=2))

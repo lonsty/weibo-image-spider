@@ -8,8 +8,8 @@ from random import choice
 
 from pydantic import BaseModel
 
-from weibo_image_spider.models.dto import User, PhotoAPI, Status
-from weibo_image_spider.utils import read_cookie, convert_to_safe_filename
+from weibo_image_spider.models.dto import PhotoAPI, Status, User
+from weibo_image_spider.utils import convert_to_safe_filename, read_cookie
 
 
 class Constant(BaseModel):
