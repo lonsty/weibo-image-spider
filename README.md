@@ -72,23 +72,25 @@ Options:
   -u, --nickname TEXT        Nickname
   -d, --destination TEXT     Directory to save images  [default:
                              weibo_images/]
-
   -o, --overwrite            Overwrite existing files  [default: False]
   -t, --thumbnail            Download thumbnails with a maximum width of 690px
                              [default: False]
-
   -n, --max-images INTEGER   Maximum number of images to download  [default:
                              2000]
-
   -w, --max-workers INTEGER  Maximum thread workers  [default: 15]
   -P, --proxies TEXT         Use proxies to access websites. Example:
-                             '{"http": "user:passwd@www.example.com:port",
-                             "https": "user:passwd@www.example.com:port"}'
-
+                             '{"http": "user:password@example.com:port",
+                             "https": "user:password@example.com:port"}'
   --help                     Show this message and exit.
 ```
 
 # 更新历史
+
+- ## Version 0.1.0 (2021-05-16)
+    
+    - 调整代码结构
+    - 修复偶发的图片下载不完整的问题
+    - 修复下载总量与给定量不一致的问题
 
 - ## Version 0.1.0a (2020-03-29)
 

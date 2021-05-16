@@ -1,4 +1,3 @@
-# @FILENAME : dto
 # @AUTHOR : lonsty
 # @DATE : 2020/3/28 15:30
 import time
@@ -13,20 +12,22 @@ appointment_jobs = Queue()
 
 
 class User(BaseModel):
-    name = ''
+    name = ""
     uid: int = 0
-    host: str = ''
+    host: str = ""
 
 
 class PhotoAPI(BaseModel):
-    action_data: str = ''
+    action_data: str = ""
     page_id: int = 0
     page: int = 1
 
     @property
     def api(self):
-        return f'https://weibo.com/p/aj/album/loading?ajwvr=6&{self.action_data}' \
-               f'&page_id={self.page_id}&page={self.page}&ajax_call=1&__rnd={self.rnd}'
+        return (
+            f"https://weibo.com/p/aj/album/loading?ajwvr=6&{self.action_data}"
+            f"&page_id={self.page_id}&page={self.page}&ajax_call=1&__rnd={self.rnd}"
+        )
 
     @property
     def rnd(self):
@@ -34,13 +35,14 @@ class PhotoAPI(BaseModel):
 
 
 class Parameters(BaseModel):
-    nickname = ''
+    nickname = ""
     uid: int = 0
     destination: str
     overwrite: bool
     thumbnail: bool
     max_images: int
     max_workers: int
+    verbose: bool
 
 
 class Status(BaseModel):
@@ -62,5 +64,7 @@ class Status(BaseModel):
 
     @property
     def fmt_status(self):
-        return f'[Succeed: {colored(str(len(self.succeed)), "green")}, ' \
-               f'Failed: {colored(str(len(self.failed)), "red")}]'
+        return (
+            f'[Succeed: {colored(str(len(self.succeed)), "green")}, '
+            f'Failed: {colored(str(len(self.failed)), "red")}]'
+        )
