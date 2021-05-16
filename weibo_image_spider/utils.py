@@ -1,4 +1,3 @@
-# @FILENAME : utils
 # @AUTHOR : lonsty
 # @DATE : 2020/3/28 14:23
 import json
@@ -15,7 +14,7 @@ thread_local = threading.local()
 
 
 def cookies_from_raw(raw):
-    return dict([line.split('=')[0], line.split('=')[1]] for line in raw.split('; '))
+    return dict([line.split("=")[0], line.split("=")[1]] for line in raw.split("; "))
 
 
 def get_session():
@@ -24,7 +23,7 @@ def get_session():
     return thread_local.session
 
 
-def retry(exceptions, tries=3, delay=1, backoff=2, logger=None):
+def retry(exceptions=Exception, tries=3, delay=1, backoff=2, logger=None):
     """
     Retry calling the decorated function using an exponential backoff.
     Args:
@@ -38,7 +37,6 @@ def retry(exceptions, tries=3, delay=1, backoff=2, logger=None):
     """
 
     def deco_retry(f):
-
         @wraps(f)
         def f_retry(*args, **kwargs):
             mtries, mdelay = tries, delay or random.uniform(0.5, 1.5)
@@ -47,7 +45,9 @@ def retry(exceptions, tries=3, delay=1, backoff=2, logger=None):
                     return f(*args, **kwargs)
                 except exceptions as e:
                     if logger:
-                        logger.warning('{}, Retrying in {} seconds...'.format(e, mdelay))
+                        logger.error("{}, Retrying in {} seconds...".format(e, mdelay))
+                    else:
+                        print("\n{}, Retrying in {} seconds...".format(e, mdelay))
                     time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
@@ -71,12 +71,12 @@ def convert_to_safe_filename(filename):
 
 
 def read_cookie():
-    with open('cookie', 'r') as f:
+    with open("cookie", "r") as f:
         return f.read().strip()
 
 
 def save_cookie(cookie):
-    with open('cookie', 'w') as f:
+    with open("cookie", "w") as f:
         f.write(cookie)
 
 
@@ -86,18 +86,18 @@ def quit(msg, code=0):
 
 
 def save_records(c):
-    filename = os.path.join(c.saved_dir, c.status.start_time.strftime('%Y-%m-%d_%H-%M-%S') + '.json')
-    with open(filename, 'w') as f:
-        f.write(json.dumps({
-            'nickname': c.user.name,
-            'uid': c.user.uid,
-            'datetime': c.status.start_time_repr,
-            'succeed': {
-                'count': len(c.status.succeed),
-                'urls': c.status.succeed
-            },
-            'failed': {
-                'count': len(c.status.failed),
-                'urls': c.status.failed
-            }
-        }, ensure_ascii=False, indent=2))
+    filename = os.path.join(c.saved_dir, c.status.start_time.strftime("%Y-%m-%d_%H-%M-%S") + ".json")
+    with open(filename, "w") as f:
+        f.write(
+            json.dumps(
+                {
+                    "nickname": c.user.name,
+                    "uid": c.user.uid,
+                    "datetime": c.status.start_time_repr,
+                    "succeed": {"count": len(c.status.succeed), "urls": c.status.succeed},
+                    "failed": {"count": len(c.status.failed), "urls": c.status.failed},
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
