@@ -14,7 +14,7 @@ from weibo_image_spider.utils import convert_to_safe_filename, read_cookie
 
 
 class Constant(BaseModel):
-    search_api: str = "https://s.weibo.com/user?q={user}&Refer=SUer_box"
+    search_api: str = "https://s.weibo.com/user?q={user}&Refer=weibo_user"
     img_hosts: List[str] = ["https://wx1.sinaimg.cn", "https://wx2.sinaimg.cn", "https://wx3.sinaimg.cn"]
     cookies_raw: str = ""
     user: User = User()
