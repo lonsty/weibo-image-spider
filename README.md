@@ -92,6 +92,12 @@ Options:
 
 # 更新历史
 
+- ## Version 0.1.1 (2021-08-26)
+
+    新功能：
+    
+    - 支持使用用户 ID（User ID）下载：`python main.py -u <user id>`
+
 - ## Version 0.1.0 (2021-05-16)
     
     - 调整代码结构
