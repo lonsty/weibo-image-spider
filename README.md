@@ -35,10 +35,10 @@ $ pip install -r requirements.txt
 *因网页版微博限制，使用爬虫请求其 API 时，需要 cookie 认证，关于 [如何获取 cookie](docs/get_cookie.md)？
 且 cookie 有效期为一天（第二天零点失效），所以最好不要跨天爬取。*
 
-下载用户昵称为 `nickname` 的最新 2000（可使用 `-n` 修改） 张图片到路径 `dest` 下：
+下载用户昵称或用户ID 为 `nickname`（或 `user-id`） 的最新 2000（可使用 `-n` 修改） 张图片到路径 `dest` 下：
 
 ```sh
-$ python main.py -u <nickname> -d <dest>
+$ python main.py -u <nickname/user-id> -d <dest>
 ```
 
 运行截图
@@ -69,19 +69,25 @@ Usage: main.py [OPTIONS]
   A Weibo image spider, visit https://github.com/lonsty/weibo-image-spider.
 
 Options:
-  -u, --nickname TEXT        Nickname
-  -d, --destination TEXT     Directory to save images  [default:
-                             weibo_images/]
-  -o, --overwrite            Overwrite existing files  [default: False]
-  -t, --thumbnail            Download thumbnails with a maximum width of 690px
-                             [default: False]
-  -n, --max-images INTEGER   Maximum number of images to download  [default:
-                             2000]
-  -w, --max-workers INTEGER  Maximum thread workers  [default: 15]
-  -P, --proxies TEXT         Use proxies to access websites. Example:
-                             '{"http": "user:password@example.com:port",
-                             "https": "user:password@example.com:port"}'
-  --help                     Show this message and exit.
+  -u, --nickname, --user-id TEXT  Nickname or User ID
+  -d, --destination TEXT          Directory to save images  [default:
+                                  weibo_images/]
+
+  -o, --overwrite                 Overwrite existing files  [default: False]
+  -t, --thumbnail                 Download thumbnails with a maximum width of
+                                  690px  [default: False]
+
+  -n, --max-images INTEGER        Maximum number of images to download
+                                  [default: 2000]
+
+  -w, --max-workers INTEGER       Maximum thread workers  [default: 15]
+  -P, --proxies TEXT              Use proxies to access websites. Example:
+                                  '{"http":
+                                  "user:passwd@www.example.com:port", "https":
+                                  "user:passwd@www.example.com:port"}'
+
+  --help                          Show this message and exit.
+
 ```
 
 # 更新历史
