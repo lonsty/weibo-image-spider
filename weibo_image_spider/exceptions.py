@@ -12,3 +12,7 @@ class NoImagesException(Exception):
 
 class ContentParserError(Exception):
     pass
+
+
+class UserNotFound(Exception):
+    pass

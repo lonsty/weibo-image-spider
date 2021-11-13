@@ -8,7 +8,6 @@ import click
 from pydantic import ValidationError
 from requests.exceptions import ConnectionError, RequestException
 from termcolor import colored
-
 from weibo_image_spider.constants import Constant
 from weibo_image_spider.models import Parameters, PhotoAPI
 from weibo_image_spider.spider_workers import crawl_worker, download_worker, query_user_by_name
