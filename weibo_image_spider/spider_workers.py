@@ -11,7 +11,7 @@ from requests.exceptions import ConnectionError, RequestException
 from termcolor import colored
 
 from .constants import Constant
-from .exceptions import ContentParserError, CookiesExpiredException, NoImagesException
+from .exceptions import ContentParserError, CookiesExpiredException, NoImagesException, UserNotFound
 from .models import User, appointment_jobs, downloading_jobs
 from .utils import get_session, retry, save_cookie
 
@@ -24,7 +24,7 @@ def query_user_by_name(const: Constant):
 
     try:
         logging.info(f"Getting information of username: {const.nickname}...")
-        resp = session.get(const.user_search_api, proxies=const.proxies, timeout=const.timeout)
+        resp = session.get(const.user_search_api, cookies=const.cookies, proxies=const.proxies, timeout=const.timeout)
         resp.raise_for_status()
     except Exception as e:
         logging.info(f"Getting user information error: {e}")
@@ -32,16 +32,15 @@ def query_user_by_name(const: Constant):
 
     try:
         logging.info("Initialing a BeautifulSoup...")
-        first = BeautifulSoup(resp.text, "html.parser").find("div", class_="card")
-        host = first.find("a", class_="name").get("href")
-        uid = first.find("a", class_="s-btn-c").get("uid")
-    except AttributeError as e:
+        first = resp.json()["user"][0]
+        name = first["u_name"]
+        uid = first["u_id"]
+    except (KeyError, IndexError) as e:
         logging.info(f"Parsing user information error: {e}")
         raise ContentParserError(
-            "Weibo website structure updated, please add a issue "
-            "to https://github.com/lonsty/weibo-image-spider/issues."
+            "Weibo API updated, please add a issue " "to https://github.com/lonsty/weibo-image-spider/issues."
         )
-    user = User(name=const.nickname, host=host, uid=uid)
+    user = User(name=name, host=f"https://weibo.com/u/{uid}", uid=uid)
     logging.info(f"Got information of username: {const.nickname}, {user}")
 
     return user

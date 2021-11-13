@@ -3,18 +3,20 @@
 import json
 import logging
 import os
+import random
 import re
-from random import choice
+import time
+# from random import choice, random
 from typing import List
 
 from pydantic import BaseModel
-
 from weibo_image_spider.models import PhotoAPI, Status, User
 from weibo_image_spider.utils import convert_to_safe_filename, read_cookie
 
 
 class Constant(BaseModel):
-    search_api: str = "https://s.weibo.com/user?q={user}&Refer=weibo_user"
+    search_url: str = "https://s.weibo.com/user?q={user}&Refer=weibo_user"
+    search_api: str = "https://s.weibo.com/ajax/topsuggest.php?key={user}&_k={ts}&_t=1&outjson=1&uid={uid}"
     img_hosts: List[str] = ["https://wx1.sinaimg.cn", "https://wx2.sinaimg.cn", "https://wx3.sinaimg.cn"]
     cookies_raw: str = ""
     user: User = User()
@@ -46,7 +48,7 @@ class Constant(BaseModel):
 
     @property
     def img_url_prefix(self):
-        return f'{choice(self.img_hosts)}/{"large" if not self.thumbnail else "mw690"}/'
+        return f'{random.choice(self.img_hosts)}/{"large" if not self.thumbnail else "mw690"}/'
 
     @property
     def saved_dir(self):
@@ -62,7 +64,9 @@ class Constant(BaseModel):
 
     @property
     def user_search_api(self):
-        return self.search_api.format(user=self.nickname)
+        return self.search_api.format(
+            user=self.nickname, ts=int(time.time() * 1000), uid=random.randrange(1_000_000_000, 9_999_999_999)
+        )
 
     @property
     def proxies(self):
